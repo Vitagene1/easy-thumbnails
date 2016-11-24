@@ -357,7 +357,7 @@ class Thumbnailer(File):
         return opts
 
     def generate_thumbnail(self, thumbnail_options, high_resolution=False,
-                           silent_template_exception=False):
+                           silent_template_exception=False, keep_file_open=False):
         """
         Return an unsaved ``ThumbnailFile`` containing a thumbnail image.
 
@@ -382,7 +382,8 @@ class Thumbnailer(File):
             thumbnail_options['size'] = (orig_size[0] * 2, orig_size[1] * 2)
         image = engine.generate_source_image(
             self, thumbnail_options, self.source_generators,
-            fail_silently=silent_template_exception)
+            fail_silently=silent_template_exception,
+            keep_file_open=keep_file_open)
         if image is None:
             raise exceptions.InvalidImageFormatError(
                 "The source file does not appear to be an image")
@@ -510,11 +511,23 @@ class Thumbnailer(File):
             generate = self.generate
 
         thumbnail = self.get_existing_thumbnail(thumbnail_options)
+
+        if 'HIGH_RESOLUTION' in thumbnail_options:
+            generate_high_resolution = thumbnail_options.get('HIGH_RESOLUTION')
+        else:
+            generate_high_resolution = self.thumbnail_high_resolution
+
+        if generate_high_resolution:
+            keep_file_open = True
+        else:
+            keep_file_open = False
+
         if not thumbnail:
             if generate:
                 thumbnail = self.generate_thumbnail(
                     thumbnail_options,
-                    silent_template_exception=silent_template_exception)
+                    silent_template_exception=silent_template_exception,
+                    keep_file_open=keep_file_open)
                 if save:
                     self.save_thumbnail(thumbnail)
             else:
@@ -522,10 +535,6 @@ class Thumbnailer(File):
                     sender=self, options=thumbnail_options,
                     high_resolution=False)
 
-        if 'HIGH_RESOLUTION' in thumbnail_options:
-            generate_high_resolution = thumbnail_options.get('HIGH_RESOLUTION')
-        else:
-            generate_high_resolution = self.thumbnail_high_resolution
         if generate_high_resolution:
             thumbnail.high_resolution = self.get_existing_thumbnail(
                 thumbnail_options, high_resolution=True)
