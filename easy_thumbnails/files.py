@@ -489,7 +489,7 @@ class Thumbnailer(File):
                 return thumbnail_file
 
     def get_thumbnail(self, thumbnail_options, save=True, generate=None,
-                      silent_template_exception=False):
+                      silent_template_exception=False, keep_file_open=True):
         """
         Return a ``ThumbnailFile`` containing a thumbnail.
 
@@ -516,11 +516,6 @@ class Thumbnailer(File):
             generate_high_resolution = thumbnail_options.get('HIGH_RESOLUTION')
         else:
             generate_high_resolution = self.thumbnail_high_resolution
-
-        if generate_high_resolution:
-            keep_file_open = True
-        else:
-            keep_file_open = False
 
         if not thumbnail:
             if generate:
