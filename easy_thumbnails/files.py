@@ -357,7 +357,7 @@ class Thumbnailer(File):
         return opts
 
     def generate_thumbnail(self, thumbnail_options, high_resolution=False,
-                           silent_template_exception=False, keep_file_open=False):
+                           silent_template_exception=False, keep_file_open=True):
         """
         Return an unsaved ``ThumbnailFile`` containing a thumbnail image.
 

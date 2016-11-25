@@ -75,7 +75,7 @@ def save_image(image, destination=None, filename=None, **options):
 
 
 def generate_source_image(source_file, processor_options, generators=None,
-                          fail_silently=True, keep_file_open=False):
+                          fail_silently=True, keep_file_open=True):
     """
     Processes a source ``File`` through a series of source generators, stopping
     once a generator returns an image.
