@@ -75,7 +75,7 @@ def save_image(image, destination=None, filename=None, **options):
 
 
 def generate_source_image(source_file, processor_options, generators=None,
-                          fail_silently=True):
+                          fail_silently=True, keep_file_open=True):
     """
     Processes a source ``File`` through a series of source generators, stopping
     once a generator returns an image.
@@ -89,7 +89,6 @@ def generate_source_image(source_file, processor_options, generators=None,
     processor_options = ThumbnailOptions(processor_options)
     # Keep record of whether the source file was originally closed. Not all
     # file-like objects provide this attribute, so just fall back to False.
-    was_closed = getattr(source_file, 'closed', False)
     if generators is None:
         generators = [
             utils.dynamic_import(name)
@@ -121,7 +120,7 @@ def generate_source_image(source_file, processor_options, generators=None,
     finally:
         # Attempt to close the file if it was closed originally (but fail
         # silently).
-        if was_closed:
+        if not keep_file_open:
             try:
                 source_file.close()
             except Exception:
